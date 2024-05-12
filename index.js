@@ -30,8 +30,13 @@ async function run() {
 
     app.post("/addBooks", async (req, res) => {
       const newBook = req.body;
-      console.log(newBook);
       const result = await booksCollection.insertOne(newBook);
+      res.send(result);
+    });
+
+    app.get("/allBooks", async (req, res) => {
+      const cursor = booksCollection.find();
+      const result = await cursor.toArray();
       res.send(result);
     });
 
