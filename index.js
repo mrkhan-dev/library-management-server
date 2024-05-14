@@ -46,9 +46,10 @@ async function run() {
     });
 
     // get borrowed books
-    app.get("/borrowedBooks", async (req, res) => {
-      const cursor = borrowedCollection.find();
-      const result = await cursor.toArray();
+    app.get("/borrowedBooks/:email", async (req, res) => {
+      const result = await borrowedCollection
+        .find({email: req.params.email})
+        .toArray();
       res.send(result);
     });
 
@@ -87,6 +88,13 @@ async function run() {
         },
       };
       const result = await booksCollection.updateOne(query, bookInfo);
+      res.send(result);
+    });
+
+    app.delete("/deleteBooks/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)};
+      const result = await borrowedCollection.deleteOne(query);
       res.send(result);
     });
 
