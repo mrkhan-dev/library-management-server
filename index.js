@@ -27,10 +27,28 @@ async function run() {
     // await client.connect();
 
     const booksCollection = client.db("shelfMaster").collection("books");
+    const borrowedCollection = client
+      .db("shelfMaster")
+      .collection("borrowedBooks");
 
     app.post("/addBooks", async (req, res) => {
       const newBook = req.body;
       const result = await booksCollection.insertOne(newBook);
+      res.send(result);
+    });
+
+    // borrowed books
+    app.post("/borrowedBooks", async (req, res) => {
+      const borrowedBooks = req.body;
+      // console.log(borrowedBooks);
+      const result = await borrowedCollection.insertOne(borrowedBooks);
+      res.send(result);
+    });
+
+    // get borrowed books
+    app.get("/borrowedBooks", async (req, res) => {
+      const cursor = borrowedCollection.find();
+      const result = await cursor.toArray();
       res.send(result);
     });
 
@@ -47,8 +65,14 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/booksCategory/:category", async (req, res) => {
+      const result = await booksCollection
+        .find({category: req.params.category})
+        .toArray();
+      res.send(result);
+    });
+
     app.put("/updateBook/:id", async (req, res) => {
-      console.log(req.params.id);
       const query = {_id: new ObjectId(req.params.id)};
       const updateBook = req.body;
 
